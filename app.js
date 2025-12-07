@@ -26,15 +26,27 @@ class NassauShift {
       'Rev_Jitter': { index: 10, min: 0, max: 100, format: v => `${Math.round(v)}%` },
     };
 
-    // Buffer file mappings (skip 32B - too large for browser decoding)
-    this.bufferFiles = {
-      'b_NassauMusic_1B_mp3': 'media/NassauMusic_1B.mp3',
-      'b_NassauMusic_2B_mp3': 'media/NassauMusic_2B.mp3',
-      'b_NassauMusic_4B_mp3': 'media/NassauMusic_4B.mp3',
-      'b_NassauMusic_8B_mp3': 'media/NassauMusic_8B.mp3',
-      'b_NassauMusic_16B_mp3': 'media/NassauMusic_16B.mp3',
-      // 'b_NassauMusic_32B_mp3': 'media/NassauMusic_32B.mp3', // Skipped - too large
-    };
+    // Detect mobile devices
+    this.isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // Buffer file mappings
+    // On mobile, only load smaller files to avoid memory crashes
+    if (this.isMobile) {
+      this.bufferFiles = {
+        'b_NassauMusic_1B_mp3': 'media/NassauMusic_1B.mp3',
+        'b_NassauMusic_2B_mp3': 'media/NassauMusic_2B.mp3',
+        'b_NassauMusic_4B_mp3': 'media/NassauMusic_4B.mp3',
+        // Skip larger files on mobile to prevent memory crashes
+      };
+    } else {
+      this.bufferFiles = {
+        'b_NassauMusic_1B_mp3': 'media/NassauMusic_1B.mp3',
+        'b_NassauMusic_2B_mp3': 'media/NassauMusic_2B.mp3',
+        'b_NassauMusic_4B_mp3': 'media/NassauMusic_4B.mp3',
+        'b_NassauMusic_8B_mp3': 'media/NassauMusic_8B.mp3',
+        'b_NassauMusic_16B_mp3': 'media/NassauMusic_16B.mp3',
+      };
+    }
 
     this.isLoaded = false;
 
@@ -209,7 +221,17 @@ class NassauShift {
     this.temporalShiftValue = 0; // 0-1 normalized
     this.isDraggingSlider = false;
 
-    const barLabels = ['1×', '2×', '4×', '8×', '16×'];
+    // On mobile, only 3 time options available (1x, 2x, 4x)
+    const barLabels = this.isMobile ? ['1×', '2×', '4×'] : ['1×', '2×', '4×', '8×', '16×'];
+    const maxSteps = this.isMobile ? 2 : 4; // 0-2 for mobile (3 options), 0-4 for desktop (5 options)
+
+    // Update slider labels in HTML for mobile
+    if (this.isMobile) {
+      const labelsContainer = document.querySelector('.slider-labels');
+      if (labelsContainer) {
+        labelsContainer.innerHTML = barLabels.map(label => `<span>${label}</span>`).join('');
+      }
+    }
 
     const updateSlider = (normalizedValue) => {
       // Clamp to 0-1
@@ -221,8 +243,8 @@ class NassauShift {
       this.sliderFill.style.width = `${percent}%`;
       this.sliderThumb.style.left = `${percent}%`;
 
-      // Calculate which integer value (1-5) this maps to
-      const intValue = Math.round(normalizedValue * 4) + 1; // 1 to 5
+      // Calculate which integer value this maps to
+      const intValue = Math.round(normalizedValue * maxSteps) + 1;
 
       // Update display label
       this.sliderValue.textContent = barLabels[intValue - 1];
