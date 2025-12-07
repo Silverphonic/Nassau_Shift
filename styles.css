@@ -852,3 +852,39 @@ body {
 .footer {
   animation: fade-in-up 0.6s var(--ease-out-expo) 0.7s both;
 }
+
+/* Mobile touch improvements */
+@media (max-width: 768px) {
+  /* Prevent double-tap zoom on buttons */
+  .load-btn,
+  .power-btn,
+  .knob,
+  .slider-track,
+  .slider-thumb {
+    touch-action: manipulation;
+  }
+
+  /* Larger touch targets */
+  .load-btn {
+    min-height: 60px;
+    min-width: 80px;
+  }
+
+  .power-btn {
+    width: 80px;
+    height: 80px;
+  }
+
+  /* Larger slider thumb for touch */
+  .slider-thumb {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Prevent text selection during touch */
+  .knob,
+  .slider-track {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}

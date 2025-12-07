@@ -272,10 +272,25 @@ class NassauShift {
 
   setupPowerButton() {
     // Load button - initializes audio and loads samples
-    this.loadBtn.addEventListener('click', () => this.loadSamples());
+    // Use touchend for mobile (fires before click, more responsive)
+    this.loadBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.loadSamples();
+    });
+    this.loadBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      this.loadSamples();
+    }, { passive: false });
 
     // Play button - toggles playback (only works after loading)
-    this.powerBtn.addEventListener('click', () => this.togglePlayback());
+    this.powerBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      this.togglePlayback();
+    });
+    this.powerBtn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      this.togglePlayback();
+    }, { passive: false });
   }
 
   async loadSamples() {
@@ -285,6 +300,16 @@ class NassauShift {
     this.statusText.textContent = 'Initializing...';
 
     try {
+      // Create AudioContext early on user gesture (required for mobile)
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      // Resume AudioContext if suspended (mobile browsers suspend by default)
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
+
       await this.initAudio();
       this.isLoaded = true;
       this.loadBtn.classList.add('loaded');
@@ -311,8 +336,15 @@ class NassauShift {
     this.statusText.textContent = 'Initializing...';
 
     try {
-      // Create audio context
-      this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      // Create audio context if not already created (may have been created in loadSamples for mobile)
+      if (!this.audioContext) {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+
+      // Ensure AudioContext is running
+      if (this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+      }
 
       // Setup analyser for visualization
       this.analyser = this.audioContext.createAnalyser();
