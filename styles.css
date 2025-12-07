@@ -176,6 +176,12 @@ body {
   border-radius: 4px;
 }
 
+.desktop-notice {
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 /* Transport / Power Section */
 .transport {
   display: flex;
