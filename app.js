@@ -344,13 +344,13 @@ class NassauShift {
     }
   }
 
-  togglePlayback() {
+  async togglePlayback() {
     if (!this.isLoaded) return;
 
     if (this.isPlaying) {
       this.stop();
     } else {
-      this.start();
+      await this.start();
     }
   }
 
@@ -475,8 +475,18 @@ class NassauShift {
     console.log('All buffers loaded!');
   }
 
-  start() {
+  async start() {
     if (!this.device) return;
+
+    // Resume audio context if suspended (REQUIRED for iOS - must be in response to user gesture)
+    if (this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+        console.log('AudioContext resumed, state:', this.audioContext.state);
+      } catch (e) {
+        console.error('Failed to resume AudioContext:', e);
+      }
+    }
 
     this.isPlaying = true;
     this.powerBtn.classList.add('active');
@@ -484,11 +494,6 @@ class NassauShift {
     this.statusText.textContent = 'Playing';
     this.meterL.classList.add('active');
     this.meterR.classList.add('active');
-
-    // Resume audio context if suspended
-    if (this.audioContext.state === 'suspended') {
-      this.audioContext.resume();
-    }
 
     // Force all filter resonances to their UI values before turning on
     // This ensures the RNBO device has the correct values
