@@ -182,6 +182,12 @@ body {
   font-style: italic;
 }
 
+.credit {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
 /* Transport / Power Section */
 .transport {
   display: flex;
