@@ -189,9 +189,9 @@ body {
 }
 
 .credit {
-  font-size: 0.8rem;
-  color: #ffffff;
-  font-style: italic;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.1em;
 }
 
 /* Transport / Power Section */
