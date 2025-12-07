@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nassau Shift</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Animated background layers -->
+    <div class="bg-layer bg-gradient"></div>
+    <div class="bg-layer bg-noise"></div>
+    <div class="bg-layer bg-waves"></div>
+
+    <!-- Main content -->
+    <main class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <span class="logo-nassau">nassau</span>
+          <span class="logo-shift">_SHIFT</span>
+        </div>
+        <div class="version">v1.22</div>
+      </header>
+
+      <!-- Transport / Power -->
+      <section class="transport">
+        <div class="transport-buttons">
+          <button class="load-btn" id="loadBtn" aria-label="Load Samples">
+            <svg class="load-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
+            <span>Load</span>
+          </button>
+          <button class="power-btn" id="powerBtn" aria-label="Play/Stop" disabled>
+            <svg class="power-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>
+            </svg>
+            <span class="power-ring"></span>
+            <span class="power-glow"></span>
+          </button>
+        </div>
+        <div class="transport-label">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Click Load to begin</span>
+        </div>
+        <div class="progress-container" id="progressContainer">
+          <div class="progress-bar" id="progressBar"></div>
+          <span class="progress-text" id="progressText"></span>
+        </div>
+      </section>
+
+      <!-- Temporal Shift Slider -->
+      <section class="temporal-shift-section">
+        <h2 class="section-title">Temporal Shift</h2>
+        <div class="temporal-shift-container">
+          <div class="slider-wrapper">
+            <div class="slider-track" id="sliderTrack">
+              <div class="slider-fill" id="sliderFill"></div>
+              <div class="slider-thumb" id="sliderThumb"></div>
+            </div>
+          </div>
+          <div class="slider-labels">
+            <span>1×</span>
+            <span>2×</span>
+            <span>4×</span>
+            <span>8×</span>
+            <span>16×</span>
+          </div>
+          <div class="slider-value-container">
+            <span class="slider-value-label">Time Dilation Factor</span>
+            <span class="slider-value" id="sliderValue">1×</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Filter Section -->
+      <section class="controls-section filters">
+        <h2 class="section-title">Terra & Atmos</h2>
+        <div class="knob-group">
+          <div class="knob-pair">
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-lpf-cutoff" data-param="LPF_Cutoff" data-min="0" data-max="4000" data-value="4000">
+                <div class="knob-track"></div>
+                <div class="knob-fill lpf-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Barometric Pressure</label>
+              <span class="knob-value" id="val-lpf-cutoff">4000 Hz</span>
+            </div>
+            <div class="knob-wrapper">
+              <div class="knob small" id="knob-lpf-res" data-param="LPF_Res" data-min="0" data-max="1" data-value="0">
+                <div class="knob-track"></div>
+                <div class="knob-fill lpf-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">UV</label>
+              <span class="knob-value" id="val-lpf-res">0%</span>
+            </div>
+          </div>
+          <div class="knob-pair">
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-hpf-cutoff" data-param="HPF_Cutoff" data-min="0" data-max="2000" data-value="0">
+                <div class="knob-track"></div>
+                <div class="knob-fill hpf-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Sea Level</label>
+              <span class="knob-value" id="val-hpf-cutoff">0 Hz</span>
+            </div>
+            <div class="knob-wrapper">
+              <div class="knob small" id="knob-hpf-res" data-param="HPF_Res" data-min="0" data-max="1" data-value="0.0">
+                <div class="knob-track"></div>
+                <div class="knob-fill hpf-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">PH Balance</label>
+              <span class="knob-value" id="val-hpf-res">0%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Reverb Section -->
+      <section class="controls-section reverb">
+        <h2 class="section-title">Canyon</h2>
+        <div class="reverb-grid">
+          <div class="knob-wrapper featured">
+            <div class="knob large" id="knob-rev-mix" data-param="Rev_Mix" data-min="0" data-max="100" data-value="0">
+              <div class="knob-track"></div>
+              <div class="knob-fill rev-fill"></div>
+              <div class="knob-head">
+                <div class="knob-indicator"></div>
+              </div>
+              <div class="knob-glow"></div>
+            </div>
+            <label class="knob-label">Canyon Exposure</label>
+            <span class="knob-value" id="val-rev-mix">0%</span>
+          </div>
+          <div class="reverb-params">
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-room-size" data-param="Room_Size" data-min="0" data-max="100" data-value="50">
+                <div class="knob-track"></div>
+                <div class="knob-fill rev-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Canyon Width</label>
+              <span class="knob-value" id="val-room-size">50%</span>
+            </div>
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-rev-decay" data-param="Rev_Decay" data-min="0" data-max="100" data-value="50">
+                <div class="knob-track"></div>
+                <div class="knob-fill rev-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Canyon Length</label>
+              <span class="knob-value" id="val-rev-decay">50%</span>
+            </div>
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-rev-damp" data-param="Rev_Damp" data-min="0" data-max="100" data-value="50">
+                <div class="knob-track"></div>
+                <div class="knob-fill rev-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Canyon Mud</label>
+              <span class="knob-value" id="val-rev-damp">50%</span>
+            </div>
+            <div class="knob-wrapper">
+              <div class="knob" id="knob-rev-jitter" data-param="Rev_Jitter" data-min="0" data-max="100" data-value="0">
+                <div class="knob-track"></div>
+                <div class="knob-fill rev-fill"></div>
+                <div class="knob-head">
+                  <div class="knob-indicator"></div>
+                </div>
+              </div>
+              <label class="knob-label">Canyon Winds</label>
+              <span class="knob-value" id="val-rev-jitter">0%</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Waveform Visualization -->
+      <section class="visualizer">
+        <canvas id="waveform"></canvas>
+        <div class="viz-overlay"></div>
+      </section>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <span class="output-meters">
+          <span class="meter" id="meterL"></span>
+          <span class="meter" id="meterR"></span>
+        </span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="https://cdn.cycling74.com/rnbo/latest/rnbo.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
